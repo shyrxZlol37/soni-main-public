@@ -375,8 +375,8 @@ class Paths
 		gottenPath = gottenPath.substring(gottenPath.indexOf(':') + 1, gottenPath.length);
 		// trace(gottenPath);
 		if(!currentTrackedSounds.exists(gottenPath)) 
-		#if MODS_ALLOWED //gabriel aqui
-			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
+		#if MODS_ALLOWED
+			currentTrackedSounds.set(gottenPath, Sound.fromFile(gottenPath));
 		#else
 			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 		#end
