@@ -114,7 +114,7 @@ class Scanline extends FlxShader
 	@:glFragmentSource('
 		#pragma header
 		const float scale = 1.0;
-	uniform bool lockAlpha = false;
+	        uniform bool lockAlpha = false;
 		void main()
 		{
 			if (mod(floor(openfl_TextureCoordv.y * openfl_TextureSize.y / scale), 2.0) == 0.0 ){
@@ -138,8 +138,8 @@ class TiltshiftEffect extends Effect{
 	public var shader:Tiltshift;
 	public function new (blurAmount:Float, center:Float){
 		shader = new Tiltshift();
-		shader.bluramount.value = [blurAmount];
-		shader.center.value = [center];
+		shader.bluramount.value = [1.0];
+		shader.center.value = [1.0];
 	}
 	
 	
@@ -150,49 +150,13 @@ class Tiltshift extends FlxShader
 	@:glFragmentSource('
 		#pragma header
 
-		// Modified version of a tilt shift shader from Martin Jonasson (http://grapefrukt.com/)
-		// Read http://notes.underscorediscovery.com/ for context on shaders and this file
-		// License : MIT
+		uniform float bluramount;
+		uniform float center;
+		const float stepSize = 0.004;
+		const float steps = 3.0;
 		 
-			/*
-				Take note that blurring in a single pass (the two for loops below) is more expensive than separating
-				the x and the y blur into different passes. This was used where bleeding edge performance
-				was not crucial and is to illustrate a point. 
-		 
-				The reason two passes is cheaper? 
-				   texture2D is a fairly high cost call, sampling a texture.
-		 
-				   So, in a single pass, like below, there are 3 steps, per x and y. 
-		 
-				   That means a total of 9 "taps", it touches the texture to sample 9 times.
-		 
-				   Now imagine we apply this to some geometry, that is equal to 16 pixels on screen (tiny)
-				   (16 * 16) * 9 = 2304 samples taken, for width * height number of pixels, * 9 taps
-				   Now, if you split them up, it becomes 3 for x, and 3 for y, a total of 6 taps
-				   (16 * 16) * 6 = 1536 samples
-			
-				   That\'s on a *tiny* sprite, let\'s scale that up to 128x128 sprite...
-				   (128 * 128) * 9 = 147,456
-				   (128 * 128) * 6 =  98,304
-		 
-				   That\'s 33.33..% cheaper for splitting them up.
-				   That\'s with 3 steps, with higher steps (more taps per pass...)
-		 
-				   A really smooth, 6 steps, 6*6 = 36 taps for one pass, 12 taps for two pass
-				   You will notice, the curve is not linear, at 12 steps it\'s 144 vs 24 taps
-				   It becomes orders of magnitude slower to do single pass!
-				   Therefore, you split them up into two passes, one for x, one for y.
-			*/
-		 
-		// I am hardcoding the constants like a jerk
-			
-		uniform float bluramount  = 1.0;
-		uniform float center      = 1.0;
-		const float stepSize    = 0.004;
-		const float steps       = 3.0;
-		 
-		const float minOffs     = (float(steps-1.0)) / -2.0;
-		const float maxOffs     = (float(steps-1.0)) / +2.0;
+		const float minOffs = (float(steps-1.0)) / -2.0;
+		const float maxOffs = (float(steps-1.0)) / +2.0;
 		 
 		void main() {
 			float amount;
@@ -272,8 +236,9 @@ class GrainEffect extends Effect {
 	public var shader:Grain;
 	public function new (grainsize, lumamount,lockAlpha){
 		shader = new Grain();
-		shader.lumamount.value = [lumamount];
-		shader.grainsize.value = [grainsize];
+		shader.lumamount.value = [1.6];
+		shader.grainsize.value = [0.6];
+		shader.coloramount.value = [0.6];
 		shader.lockAlpha.value = [lockAlpha];
 		shader.uTime.value = [FlxG.random.float(0,8)];
 		PlayState.instance.shaderUpdates.push(update);
@@ -293,23 +258,6 @@ class Grain extends FlxShader
 	@:glFragmentSource('
 		#pragma header
 
-		/*
-		Film Grain post-process shader v1.1
-		Martins Upitis (martinsh) devlog-martinsh.blogspot.com
-		2013
-
-		--------------------------
-		This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-		So you are free to share, modify and adapt it for your needs, and even use it for commercial use.
-		I would also love to hear about a project you are using it.
-
-		Have fun,
-		Martins
-		--------------------------
-
-		Perlin noise shader by toneburst:
-		http://machinesdontcare.wordpress.com/2009/06/25/3d-perlin-noise-sphere-vertex-shader-sourcecode/
-		*/
 		uniform float uTime;
 
 		const float permTexUnit = 1.0/256.0;        // Perm texture texel-size
@@ -318,12 +266,12 @@ class Grain extends FlxShader
 		float width = openfl_TextureSize.x;
 		float height = openfl_TextureSize.y;
 
-		const float grainamount = 0.05; //grain amount
-		bool colored = false; //colored noise?
-		uniform float coloramount = 0.6;
-		uniform float grainsize = 1.6; //grain particle size (1.5 - 2.5)
-		uniform float lumamount = 1.0; //
-	uniform bool lockAlpha = false;
+		const float grainamount = 0.05; 
+		bool colored = false;
+		uniform float coloramount;
+		uniform float grainsize;
+		uniform float lumamount;
+        	uniform bool lockAlpha = false;
 
 		//a random texture generator, but you can also use a pre-computed perturbation texture
 	
@@ -525,7 +473,7 @@ class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ld
       	vec2 look = uv;
         if(distortionOn){
         	float window = 1./(1.+20.*(look.y-mod(iTime/4.,1.))*(look.y-mod(iTime/4.,1.)));
-        	look.x = look.x + (sin(look.y*10. + iTime)/50.*onOff(4.,4.,.3)*(1.+cos(iTime*80.))*window)*(glitchModifier*2);
+        	look.x = look.x + (sin(look.y*10. + iTime)/50.*onOff(4.,4.,.3)*(1.+cos(iTime*80.))*window)*(glitchModifier*2.);
         	float vShift = 0.4*onOff(2.,3.,.9)*(sin(iTime)*sin(iTime*20.) +
         										 (0.5 + 0.1*sin(iTime*200.)*cos(iTime)));
         	look.y = mod(look.y + vShift*glitchModifier, 1.);
@@ -608,7 +556,7 @@ class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ld
 
       gl_FragColor = mix(video,vec4(noise(uv * 75.)),.05);
 
-      if(curUV.x<0 || curUV.x>1 || curUV.y<0 || curUV.y>1){
+      if(curUV.x<0. || curUV.x>1. || curUV.y<0. || curUV.y>1.){
         gl_FragColor = vec4(0,0,0,0);
       }
 
@@ -626,10 +574,10 @@ class ThreeDEffect extends Effect{
 	
 	public var shader:ThreeDShader = new ThreeDShader();
 	public function new(xrotation:Float=0,yrotation:Float=0,zrotation:Float=0,depth:Float=0){
-		shader.xrot.value = [xrotation];
-		shader.yrot.value = [yrotation];
-		shader.zrot.value = [zrotation];
-		shader.dept.value = [depth];
+		shader.xrot.value = [0.0];
+		shader.yrot.value = [0.0];
+		shader.zrot.value = [0.0];
+		shader.dept.value = [0.0];
 	}
 	
 	
@@ -640,10 +588,10 @@ class ThreeDEffect extends Effect{
 class ThreeDShader extends FlxShader{
 	@:glFragmentSource('
 	#pragma header
-	uniform float xrot = 0.0;
-	uniform float yrot = 0.0;
-	uniform float zrot = 0.0;
-	uniform float dept = 0.0;
+	uniform float xrot;
+	uniform float yrot;
+	uniform float zrot;
+	uniform float dept;
 	float alph = 0;
 float plane( in vec3 norm, in vec3 po, in vec3 ro, in vec3 rd ) {
     float de = dot(norm, rd);
@@ -882,8 +830,8 @@ class BloomEffect extends Effect{
 	
 	public var shader:BloomShader = new BloomShader();
 	public function new(blurSize:Float, intensity:Float){
-		shader.blurSize.value = [blurSize];
-		shader.intensity.value = [intensity];
+		shader.blurSize.value = [1.0/512.0];
+		shader.intensity.value = [0.35];
 		
 	}
 	
@@ -898,8 +846,8 @@ class BloomShader extends FlxShader{
 	
 	#pragma header
 	
-	uniform float intensity = 0.35;
-	uniform float blurSize = 1.0/512.0;
+	uniform float intensity;
+	uniform float blurSize;
 void main()
 {
    vec4 sum = vec4(0);
