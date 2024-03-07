@@ -103,7 +103,7 @@ class Song
 		#end
 
 		if(rawJson == null) {
-			#if sys
+			#if desktop //ata, em MODS_ALLOWED n precisa pq ja tem a if em project.xml
 			rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
 			#else
 			rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
