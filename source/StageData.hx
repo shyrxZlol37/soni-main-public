@@ -1,11 +1,7 @@
 package;
 
-#if sys
-import sys.io.File;
-import sys.FileSystem;
-#else
 import openfl.utils.Assets;
-#end
+
 import haxe.Json;
 import haxe.format.JsonParser;
 import Song;
