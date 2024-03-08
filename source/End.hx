@@ -21,12 +21,16 @@ class End extends MusicBeatState
         bg.antialiasing = ClientPrefs.globalAntialiasing;
         add(bg);
 
-        continuePls = new FlxText(810, 680, 465, "PRESS ENTER TO CONTINUE", 32);
+        continuePls = new FlxText(810, 680, 465, "PRESS A TO CONTINUE", 32);
 		continuePls.setFormat("Arial", 32, FlxColor.WHITE, CENTER, NONE, FlxColor.BLACK);
 		continuePls.scrollFactor.set();
         add(continuePls);
 
         FlxG.sound.playMusic(Paths.music('freakyMenu'));
+
+        #if android
+	addVirtualPad(NONE, A);
+	#end
     }
  
  
