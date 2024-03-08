@@ -152,7 +152,8 @@ class Codes extends MusicBeatState
                     FlxG.mouse.visible = false;
                     FlxG.sound.pause();
                     canSelect = false;
-	//	   (new FlxVideo(Paths.video('Peter Griffin in City Escape'))).finishCallback = function() {
+	//	    (new FlxVideo(Paths.video('Peter Griffin in City Escape'))).finishCallback = function() 
+		    {
 
                         FlxG.sound.resume();
                         FlxG.mouse.visible = true;
